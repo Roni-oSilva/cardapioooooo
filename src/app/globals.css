@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-forest-800 font-sans text-cream-100 antialiased;
+    background-image: url('/wave.svg');
+    background-size: 520px 520px;
+    background-attachment: fixed;
+  }
+  h1, h2, h3, .font-display { font-family: 'Archivo Variable', Impact, sans-serif; font-stretch: 86%; }
+  :focus-visible { outline: 3px solid #f0dcb4; outline-offset: 2px; border-radius: 6px; }
+  ::selection { background: #6c170b; color: #f8ebd0; }
+}
+
+@layer components {
+  /* títulos pesados em caixa alta, como na arte de referência */
+  .title { @apply font-display font-black uppercase leading-[.92] tracking-tight; }
+  .panel { @apply rounded-[28px] bg-cream-100 p-5 text-wine-700 shadow-card sm:p-7; }
+  .panel-green { @apply rounded-[28px] bg-forest-900/80 p-5 text-cream-100 shadow-card ring-1 ring-cream-100/10 sm:p-7; }
+  .price { @apply inline-flex min-w-[3.4rem] items-center justify-center rounded-full bg-forest-900 px-3 py-2 font-display text-lg font-black text-cream-100; }
+
+  .btn { @apply inline-flex min-h-[44px] select-none items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 active:scale-[.97] disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply btn bg-wine-700 text-cream-100 shadow-md hover:-translate-y-0.5 hover:bg-wine-600 hover:shadow-lg; }
+  .btn-cream { @apply btn bg-cream-100 text-wine-700 hover:-translate-y-0.5 hover:bg-cream-50; }
+  .btn-ghost { @apply btn border border-cream-100/30 text-cream-100 hover:bg-cream-100/10; }
+  .btn-ghost-dark { @apply btn border border-wine-700/30 text-wine-700 hover:bg-wine-700/10; }
+  .btn-danger { @apply btn bg-ember text-white hover:brightness-110; }
+  .btn-sm { @apply min-h-[36px] px-3.5 py-1.5 text-xs; }
+
+  .field { @apply w-full rounded-2xl border border-wine-700/25 bg-cream-50 px-4 py-2.5 text-sm text-wine-800 placeholder:text-wine-700/50 focus:border-wine-700 focus:outline-none focus:ring-2 focus:ring-wine-700/30; }
+  .field-dark { @apply w-full rounded-2xl border border-cream-100/25 bg-forest-900/60 px-4 py-2.5 text-sm text-cream-100 placeholder:text-cream-100/50 focus:border-cream-200 focus:outline-none focus:ring-2 focus:ring-cream-200/30; }
+  .label { @apply mb-1 block text-xs font-semibold uppercase tracking-wider text-wine-700/80; }
+  .chip { @apply inline-flex items-center rounded-full bg-wine-700/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-wine-700; }
+  .skeleton { @apply animate-pulse rounded-2xl bg-cream-100/15; }
+}
+
+/* some a barra de rolagem horizontal das categorias */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
