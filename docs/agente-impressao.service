@@ -1,0 +1,17 @@
+# Linux (systemd): copie para /etc/systemd/system/agente-impressao.service
+# sudo systemctl enable --now agente-impressao
+[Unit]
+Description=Agente de impressão do cardápio digital
+After=network-online.target
+
+[Service]
+WorkingDirectory=/opt/cardapio-agent
+ExecStart=/usr/bin/node /opt/cardapio-agent/print-agent.mjs
+Restart=always
+RestartSec=3
+User=cardapio
+# Para USB (/dev/usb/lp0) o usuário precisa estar no grupo "lp"
+SupplementaryGroups=lp
+
+[Install]
+WantedBy=multi-user.target

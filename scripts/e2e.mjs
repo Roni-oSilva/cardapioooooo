@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
+import net from 'node:net';
 import { loadEnv } from './env.mjs';
 
 loadEnv();
@@ -34,7 +35,7 @@ const q = async (sql, p) => (await db.query(sql, p)).rows;
 // ---- servidor ----
 const server = spawn('node', ['node_modules/next/dist/bin/next', 'start', '-p', String(PORT)], { env, stdio: ['ignore', 'pipe', 'pipe'] });
 let serverLog = ''; server.stdout.on('data', (d) => (serverLog += d)); server.stderr.on('data', (d) => (serverLog += d));
-const cleanup = async () => { server.kill('SIGTERM'); await db.end().catch(() => {}); fs.rmSync(tmp, { recursive: true, force: true }); };
+const cleanup = async () => { server.kill('SIGTERM'); fakePrinter.close(); await db.end().catch(() => {}); fs.rmSync(tmp, { recursive: true, force: true }); };
 for (let i = 0; i < 60; i++) { try { if ((await fetch(BASE + '/api/menu')).ok) break; } catch {} await new Promise((r) => setTimeout(r, 500)); }
 
 let cookie = '';
@@ -51,6 +52,25 @@ const loginAs = async (email, password) => {
   return { r, cookie: (r.res.headers.get('set-cookie') || '').split(';')[0] };
 };
 const agent = (extra = {}) => spawnSync('node', ['agent/print-agent.mjs', '--once'], { env: { ...process.env, ALLOW_FILE_DIR: tmp, SERVER_URL: BASE, PRINT_AGENT_TOKEN: TOKEN, ...extra }, encoding: 'utf8' });
+
+// agente assíncrono (o servidor falso de impressora vive neste mesmo processo, então não pode bloquear)
+const agentAsync = (extra = {}) => new Promise((resolve) => {
+  const c = spawn('node', ['agent/print-agent.mjs', '--once'], { env: { ...process.env, ALLOW_FILE_DIR: tmp, SERVER_URL: BASE, PRINT_AGENT_TOKEN: TOKEN, ...extra } });
+  let out = ''; c.stdout.on('data', (d) => (out += d)); c.stderr.on('data', (d) => (out += d)); c.on('close', () => resolve(out));
+});
+// impressora térmica de rede falsa: responde às consultas de status ESC/POS (DLE EOT n) e guarda o que recebe
+let fakeMode = 'online'; const fakeReceived = []; const fakeQueries = [];
+const fakePrinter = net.createServer((sock) => {
+  sock.on('data', (b) => {
+    if (b.length === 3 && b[0] === 0x10 && b[1] === 0x04) {
+      fakeQueries.push(b[2]);
+      if (fakeMode === 'mute') return;
+      if (b[2] === 1) return sock.write(Buffer.from([fakeMode === 'offline' ? 0x1a : 0x12]));
+      if (b[2] === 4) return sock.write(Buffer.from([fakeMode === 'paper-out' ? 0x72 : 0x12]));
+    } else fakeReceived.push(b);
+  });
+});
+await new Promise((r) => fakePrinter.listen(9199, '127.0.0.1', r));
 
 try {
   section('Autenticação e permissões');
@@ -172,6 +192,17 @@ try {
   ok(htmlA4.status === 200 && /A4/i.test(htmlA4.data), 'comanda HTML A4');
   ok((await api('GET', `/comanda/${id2}`, undefined, { auth: false })).status === 307, 'comanda exige login');
 
+  section('Lista e filtros de pedidos');
+  const all = await api('GET', '/api/admin/orders');
+  ok(all.status === 200 && all.data.orders.length >= 3 && all.data.orders[0].items.length > 0, 'lista de pedidos sem filtros', all.data);
+  const byTable = await api('GET', `/api/admin/orders?table=${mesa}&status=recebido`);
+  ok(byTable.status === 200 && byTable.data.orders.every((o) => o.table_label === '5' && o.status === 'recebido'), 'filtra por mesa e status');
+  const byNum = await api('GET', `/api/admin/orders?q=${o1.data.number}`);
+  ok(byNum.data.orders.length === 1 && byNum.data.orders[0].number === o1.data.number, 'filtra por número do pedido');
+  const today = new Date().toISOString().slice(0, 10);
+  ok((await api('GET', `/api/admin/orders?from=${today}&to=${today}`)).data.orders.length >= 3, 'filtra por período');
+  ok((await api('GET', '/api/admin/orders?from=2000-01-01&to=2000-01-02')).data.orders.length === 0, 'período sem pedidos devolve lista vazia');
+
   section('Fluxo de status e cozinha');
   const k = (await api('GET', '/api/admin/kitchen')).data;
   ok(k.orders.length === 3 && k.orders[0].items.length === 2 && k.orders[0].table_label === '5', 'monitor da cozinha lista pedidos com itens e mesa');
@@ -267,6 +298,52 @@ try {
   await api('POST', '/api/orders', { idempotency_key: crypto.randomUUID(), service_type: 'retirada', customer_name: 'Rt', items: [{ product_id: menu.products.find((p) => p.name === 'Tiramisù').id, quantity: 1, option_ids: [], notes: '' }] }, { auth: false });
   ok(await waitEvent, 'novo pedido chega em tempo real (SSE/LISTEN-NOTIFY)');
   reader.cancel().catch(() => {});
+
+  section('Impressora de rede (TCP/ESC-POS) e CUPS');
+  const mkOrder = async () => (await api('POST', '/api/orders', mk({ customer_name: 'TCP' }), { auth: false })).data;
+  const jobOf = async (orderId, type) => (await q(`SELECT status, attempts, last_error, id FROM print_jobs WHERE order_id=$1 AND copy_type=$2 AND NOT is_reprint`, [orderId, type]))[0];
+  await q(`UPDATE printers SET target='tcp://127.0.0.1:9199' WHERE copy_type='cozinha'`);
+  await q(`UPDATE printers SET active=false WHERE copy_type='atendimento'`);
+  let ord = await mkOrder(); fakeReceived.length = 0; fakeQueries.length = 0; fakeMode = 'online';
+  let log = await agentAsync();
+  ok((await jobOf(ord.id, 'cozinha')).status === 'printed' && /status ok/.test(log), 'TCP: impressora online → impresso com status confirmado', log);
+  ok(fakeQueries.includes(1) && fakeQueries.includes(4), 'TCP: agente consultou status e sensor de papel antes de imprimir');
+  const tcpBytes = Buffer.concat(fakeReceived);
+  ok(tcpBytes[0] === 0x1b && tcpBytes.toString('latin1').includes('MESA 5'), 'TCP: impressora recebeu a comanda ESC/POS completa');
+  ord = await mkOrder(); fakeMode = 'offline'; fakeReceived.length = 0;
+  log = await agentAsync(); let jb = await jobOf(ord.id, 'cozinha');
+  ok(jb.status === 'queued' && /offline/.test(jb.last_error) && fakeReceived.length === 0, 'TCP: impressora offline → NÃO imprime e NÃO marca como impresso', jb);
+  await q(`UPDATE print_jobs SET next_attempt_at=now() WHERE id=$1`, [jb.id]); fakeMode = 'paper-out';
+  await agentAsync(); jb = await jobOf(ord.id, 'cozinha');
+  ok(jb.status === 'queued' && /papel/.test(jb.last_error), 'TCP: sem papel é detectado e registrado', jb.last_error);
+  await q(`UPDATE print_jobs SET next_attempt_at=now() WHERE id=$1`, [jb.id]); fakeMode = 'mute';
+  await agentAsync({ PRINT_CONFIRM: 'status' }); jb = await jobOf(ord.id, 'cozinha');
+  ok(jb.status === 'queued' && /status/.test(jb.last_error), 'TCP: modo estrito recusa impressora que não responde ao status', jb.last_error);
+  await q(`UPDATE print_jobs SET next_attempt_at=now() WHERE id=$1`, [jb.id]);
+  log = await agentAsync(); jb = await jobOf(ord.id, 'cozinha');
+  ok(jb.status === 'printed' && /sem resposta de status/.test(log), 'TCP: modo padrão imprime e registra que não houve status', log);
+  ok((await q(`SELECT confirmation FROM print_attempts WHERE job_id=$1 AND success`, [jb.id]))[0].confirmation.includes('sem resposta'), 'nível de confirmação fica gravado no histórico');
+
+  // CUPS com comandos lp/lpstat/cancel simulados
+  const bin = path.join(tmp, 'bin'); fs.mkdirSync(bin);
+  const capture = path.join(tmp, 'cups.bin');
+  fs.writeFileSync(path.join(bin, 'lp'), `#!/bin/sh\ncat > "${capture}"\necho "$@" > "${capture}.args"\necho "request id is FAKE-42 (1 file(s))"\n`, { mode: 0o755 });
+  fs.writeFileSync(path.join(bin, 'lpstat'), `#!/bin/sh\ncase "$*" in *not-completed*) :;; *completed*) echo "FAKE-42 root 1024 Tue";; esac\n`, { mode: 0o755 });
+  fs.writeFileSync(path.join(bin, 'cancel'), `#!/bin/sh\nexit 0\n`, { mode: 0o755 });
+  await q(`UPDATE printers SET target='cups:FAKE', paper='a4', active=true WHERE copy_type='atendimento'`);
+  await q(`UPDATE printers SET active=false WHERE copy_type='cozinha'`);
+  ord = await mkOrder();
+  log = await agentAsync({ PATH: `${bin}:${process.env.PATH}` });
+  jb = await jobOf(ord.id, 'atendimento');
+  ok(jb.status === 'printed' && /cups: job FAKE-42 concluído/.test(log), 'CUPS: job concluído é confirmado e marcado como impresso', log);
+  ok(fs.readFileSync(capture, 'utf8').includes('TOTAL DO PEDIDO') && !fs.readFileSync(capture).includes(0x1b), 'CUPS/A4: envia texto simples (não ESC/POS) com valores');
+  fs.writeFileSync(path.join(bin, 'lpstat'), `#!/bin/sh\ncase "$*" in *not-completed*) :;; esac\n`, { mode: 0o755 }); // some da fila mas não consta como concluído
+  ord = await mkOrder(); await agentAsync({ PATH: `${bin}:${process.env.PATH}` });
+  jb = await jobOf(ord.id, 'atendimento');
+  ok(jb.status === 'queued' && /não consta como concluído/.test(jb.last_error), 'CUPS: job que some sem concluir NÃO é marcado como impresso', jb.last_error);
+  await q(`UPDATE printers SET active=true, target=$1, paper='80' WHERE copy_type='cozinha'`, ['file:' + kitchenFile]);
+  await q(`UPDATE printers SET target=$1, paper='58' WHERE copy_type='atendimento'`, ['file:' + serviceFile]);
+  await q(`UPDATE print_jobs SET status='printed' WHERE status IN ('queued','printing','failed')`);
 
   section('Logout');
   await api('POST', '/api/auth/logout');

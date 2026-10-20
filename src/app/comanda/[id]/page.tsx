@@ -27,9 +27,9 @@ export default async function Comanda({ params, searchParams }: { params: { id: 
     .sheet { width: ${p.width}; font-size: ${p.font}px; }
     .ticket { color: #000; font-family: 'Poppins', Arial, sans-serif; line-height: 1.25; }
     .t-text { white-space: pre-wrap; overflow-wrap: anywhere; margin: .1em 0; }
-    .t-lg { font-size: 1.25em; } .t-xl { font-size: 1.7em; line-height: 1.1; font-family: 'Archivo Variable', Arial Black, sans-serif; }
+    .t-lg { font-size: 1.35em; line-height: 1.15; } .t-xl { font-size: 1.7em; line-height: 1.1; font-family: 'Archivo Variable', Arial Black, sans-serif; }
     .t-invert { background: #000; color: #fff; padding: .15em .3em; margin: .3em 0; }
-    .t-pair { display: flex; justify-content: space-between; gap: .6em; margin: .1em 0; } .t-pair span:last-child { text-align: right; white-space: nowrap; }
+    .t-pair { display: flex; justify-content: space-between; align-items: baseline; gap: .6em; margin: .1em 0; } .t-pair span:first-child { white-space: nowrap; flex-shrink: 0; } .t-pair span:last-child { text-align: right; min-width: 0; overflow-wrap: anywhere; }
     .t-rule { border: 0; border-top: 1px dashed #000; margin: .45em 0; } .t-rule-strong { border: 0; border-top: 2px solid #000; margin: .5em 0; }
     .t-space { height: .5em; } .t-logo { display: block; margin: 0 auto .4em; max-height: 3.2em; filter: grayscale(1) contrast(1.4); }
     @media screen { .paper-bg { background: #d9d5cb; min-height: 100dvh; } .sheet { background: #fff; margin: 1.5rem auto; padding: 1rem; box-shadow: 0 8px 30px rgba(0,0,0,.25); } }

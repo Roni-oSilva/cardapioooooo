@@ -1,0 +1,30 @@
+# Sobe PostgreSQL + aplicação. Antes: copie .env.example para .env e preencha AUTH_SECRET, SEED_ADMIN_PASSWORD e PRINT_AGENT_TOKEN.
+#   docker compose up -d --build
+#   docker compose exec app node scripts/seed.mjs     # cria o admin e o cardápio de exemplo (uma vez)
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cardapio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+      POSTGRES_DB: cardapio
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cardapio"]
+      interval: 5s
+      retries: 10
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://cardapio:${POSTGRES_PASSWORD}@db:5432/cardapio
+      DATABASE_SSL: ""
+    ports: ["3000:3000"]
+    volumes: [uploads:/data/uploads]
+volumes:
+  pgdata:
+  uploads:

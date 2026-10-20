@@ -3,8 +3,8 @@
 export function Thumb({ src, name, className = '' }: { src: string | null; name: string; className?: string }) {
   if (src) return <img src={src} alt={name} loading="lazy" className={`object-cover ${className}`} />;
   return (
-    <div aria-hidden className={`grid place-items-center bg-forest-700 bg-[url('/wave.svg')] bg-[length:240px] ${className}`}>
-      <span className="title text-5xl text-cream-100/90">{name.trim().charAt(0)}</span>
+    <div aria-hidden className={`grid place-items-center bg-forest-900 ${className}`}>
+      <span className="title text-5xl text-cream-300/70">{name.trim().charAt(0)}</span>
     </div>
   );
 }

@@ -49,7 +49,7 @@ export function buildTicket(t: TicketData): Block[] {
   if (o.customer_name) b.push({ kind: 'pair', left: 'Cliente:', right: o.customer_name });
   if (o.customer_phone) b.push({ kind: 'pair', left: 'Telefone:', right: o.customer_phone });
   if (o.delivery_address) b.push({ kind: 'text', text: `Endereço: ${o.delivery_address}` });
-  b.push({ kind: 'pair', left: 'Recebido por:', right: o.created_by_name ?? 'Cliente (cardápio digital)' });
+  b.push({ kind: 'pair', left: 'Recebido por:', right: o.created_by_name ?? 'Cardápio digital' });
   b.push({ kind: 'rule', char: '=' });
 
   for (const it of o.items as any[]) {
