@@ -223,6 +223,7 @@ const tabSum=t=>Math.max(0,S.orders.filter(o=>o.tab===t.id&&o.status!=='cancelad
 /* ---------- celular ---------- */
 function renderPhone(){
  const sc=$('#pscroll'),top=sc.scrollTop;
+ if($('#pnotes'))P.notes=$('#pnotes').value;if($('#pname'))P.name=$('#pname').value; // não perde o que o cliente digitou quando a tela atualiza
  const vis=S.products;
  let h=`<div class="p-head"><div style="display:flex;align-items:center;gap:10px"><span style="width:38px;height:38px;border-radius:50%;background:var(--cream);color:var(--wine);display:grid;place-items:center;font-family:'Archivo Variable';font-weight:900;font-size:18px">R</span><span class="t" style="font-size:13px;letter-spacing:.16em">Restaurante Premium</span></div>
  <h1 style="font-size:58px;margin-top:18px">Nosso<br>cardápio</h1><p style="margin-top:10px;font-size:13px;opacity:.9">Cozinha autoral · Ingredientes de verdade</p>
@@ -487,7 +488,7 @@ async function tap(sel,pause=500){
  const el=typeof sel==='string'?$(sel):sel;if(!el)throw new Error('tour: não achei '+sel);
  el.scrollIntoView({block:'center',behavior:FAST?'auto':'smooth'});await sleep(350);
  const r=el.getBoundingClientRect();cur.style.left=(r.left+Math.min(r.width/2,60))+'px';cur.style.top=(r.top+r.height/2)+'px';cur.classList.add('on');await sleep(800);
- cur.classList.add('down');await sleep(130);el.click();cur.classList.remove('down');await sleep(pause)}
+ cur.classList.add('down');await sleep(130);(typeof sel==='string'?$(sel)||el:el).click();cur.classList.remove('down');await sleep(pause)}
 async function typeIn(sel,text){const el=$(sel);el.scrollIntoView({block:'center',behavior:FAST?'auto':'smooth'});await sleep(300);const r=el.getBoundingClientRect();cur.style.left=(r.left+30)+'px';cur.style.top=(r.top+r.height/2)+'px';cur.classList.add('on');await sleep(800);el.focus();for(const ch of text){el.value+=ch;el.dispatchEvent(new Event('input'));await sleep(55)}await sleep(300)}
 async function titleCard(html,ms){const c=$('#tcard');c.innerHTML=html;c.classList.add('show');await sleep(ms);c.classList.remove('show')}
 async function selectVal(sel,val){const el=$(sel);el.scrollIntoView({block:'center',behavior:FAST?'auto':'smooth'});await sleep(300);const r=el.getBoundingClientRect();cur.style.left=(r.left+40)+'px';cur.style.top=(r.top+r.height/2)+'px';cur.classList.add('on');await sleep(800);el.value=val;el.dispatchEvent(new Event('change',{bubbles:true}));await sleep(600)}
