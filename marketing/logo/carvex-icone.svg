@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Carvex">
+  <rect width="120" height="120" rx="30" fill="#f8ebd0"/>
+  <path d="M80 41.5A28 28 0 1 0 80 78.5" fill="none" stroke="#6c170b" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="90" cy="60" r="8" fill="#d9522b"/>
+</svg>
