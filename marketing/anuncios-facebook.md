@@ -1,4 +1,4 @@
-# Anúncios Carvex — Facebook e Instagram Ads
+# Anúncios — Facebook e Instagram Ads
 
 ## Arquivos (pasta `anuncios/`)
 | Arquivo | Tamanho | Onde usar |
@@ -16,7 +16,7 @@ Dica: suba o **1 e o 2 juntos** no mesmo conjunto de anúncios. O Meta mostra ma
 - **Botão (CTA):** *Enviar mensagem* (ou *Saiba mais*, se o destino for uma página).
 - **Posicionamentos:** Feed e Stories/Reels do Facebook e Instagram. Comece em *automático* e depois veja onde rende mais.
 - **Orçamento inicial:** comece pequeno e fixo por dia, por 5 a 7 dias, antes de aumentar. O valor depende da sua cidade e da sua margem; use o que você aceita gastar para aprender. Não há garantia de resultado.
-- **Mensagem automática (WhatsApp Business):** "Oi! Que bom o interesse na Carvex. Seu restaurante é bar, pizzaria, restaurante ou lanchonete? Posso te mostrar o sistema funcionando em 3 minutos."
+- **Mensagem automática (WhatsApp Business):** "Oi! Que bom o seu interesse. Seu restaurante é bar, pizzaria, restaurante ou lanchonete? Posso te mostrar o sistema funcionando em 3 minutos."
 
 ## Público
 - **Local:** sua cidade/região (raio de 30–50 km, ou as cidades onde você atende).
@@ -31,7 +31,7 @@ Dica: suba o **1 e o 2 juntos** no mesmo conjunto de anúncios. O Meta mostra ma
 **Texto principal:**
 Seu cliente pede pelo celular. A cozinha recebe — e a comanda sai sozinha na impressora. 🍽️
 
-A Carvex é o cardápio digital completo para restaurante:
+Este é o cardápio digital completo para restaurante:
 ✅ Cardápio por QR code na mesa
 ✅ Comanda impressa automaticamente na cozinha
 ✅ Monitor de cozinha em tempo real
@@ -46,7 +46,7 @@ Quer ver funcionando no seu restaurante? Chame a gente e peça uma demonstraçã
 **Texto principal:**
 Pedido anotado errado. Comanda que some. Cozinha sem saber o ponto da carne. 😤
 
-Com a Carvex o cliente escolhe tudo no celular (ponto, acompanhamentos, adicionais e observações) e a cozinha recebe a comanda certinha, impressa na hora.
+Com o nosso sistema o cliente escolhe tudo no celular (ponto, acompanhamentos, adicionais e observações) e a cozinha recebe a comanda certinha, impressa na hora.
 
 👉 Chame e peça uma demonstração.
 
@@ -54,7 +54,7 @@ Com a Carvex o cliente escolhe tudo no celular (ponto, acompanhamentos, adiciona
 **Descrição:** O cliente pede. A cozinha vê tudo certinho.
 
 ### Variação C — curta (Stories/Reels)
-**Texto:** Pedido no celular, comanda na cozinha. Peça uma demonstração da Carvex.
+**Texto:** Pedido no celular, comanda na cozinha. Peça uma demonstração.
 
 ## Teste A/B recomendado (semana 1)
 1. Anúncio 1 × Anúncio 2 (mesmo público, mesmo orçamento).
@@ -64,7 +64,7 @@ Com a Carvex o cliente escolhe tudo no celular (ponto, acompanhamentos, adiciona
 ## Cuidados com as políticas do Meta
 - Não prometa resultado garantido (ex.: "aumente suas vendas em 50%") nem invente números ou depoimentos.
 - Não fale diretamente com atributos pessoais do público ("Você que tem dívidas…").
-- Mantenha a página/perfil com o nome **Carvex** e o mesmo logo do anúncio.
+- Mantenha a página/perfil coerente com o visual do anúncio.
 - Os criativos têm pouco texto na imagem, o que ajuda na entrega.
 
 ## Antes de publicar

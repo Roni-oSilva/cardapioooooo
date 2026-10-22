@@ -4,15 +4,14 @@ import { chromium } from '/tmp/claude-0/-home-user-cardapioooooo/df0d96d0-663d-5
 const demo = fs.readFileSync('../demo/demo.html', 'utf8');
 const fonts = demo.slice(demo.indexOf('@font-face'), demo.indexOf(':root{'));
 const wave = 'data:image/svg+xml,' + encodeURIComponent(fs.readFileSync('../public/wave.svg', 'utf8'));
-const icon = fs.readFileSync('logo/carvex-icone.svg', 'utf8');
 const img = (n) => `../assets/${n}.png`;
-const logo = (h) => `<span style="display:inline-flex;align-items:center;gap:${h * 0.22}px"><span style="display:block;width:${h}px;height:${h}px">${icon}</span><span class="t" style="font-size:${h * 0.78}px;letter-spacing:.02em;line-height:1">Carvex</span></span>`;
+const logo = (h) => `<span class="pill" style="font-size:${Math.round(h*0.3)}px;padding:12px 26px">Para restaurantes</span>`;
 const hl = (txt, size, extra = '') => `<div class="abs t" style="${extra};font-size:${size}px;line-height:1;white-space:nowrap;background:#f8ebd0;color:#6c170b;padding:${size * .13}px ${size * .28}px ${size * .08}px;border-radius:${size * .26}px;transform:rotate(-1.2deg)">${txt}</div>`;
 
 const ads = {
   // 1) Quadrado 1080x1080 — ângulo "benefício"
   'anuncio-1-feed-quadrado': { w: 1080, h: 1080, body: `
-<div class="abs" style="left:56px;top:44px;right:56px;display:flex;justify-content:space-between;align-items:center">${logo(74)}<span class="pill" style="font-size:20px;padding:10px 22px">Para restaurantes</span></div>
+<div class="abs" style="left:56px;top:44px;right:56px;display:flex;justify-content:space-between;align-items:center">${logo(74)}</div>
 <h1 class="t abs" style="left:56px;top:160px;font-size:84px;line-height:1;white-space:nowrap">Pedido no celular,</h1>
 ${hl('comanda na cozinha.', 80, 'left:44px;top:256px')}
 <img class="abs shadow" src="${img('phone')}" style="right:40px;top:400px;width:360px;transform:rotate(4deg);clip-path:inset(0 0 30% 0);-webkit-mask-image:linear-gradient(to bottom,#000 46%,transparent 70%)">
@@ -23,7 +22,7 @@ ${hl('comanda na cozinha.', 80, 'left:44px;top:256px')}
 
   // 2) Quadrado 1080x1080 — ângulo "erro de anotação"
   'anuncio-2-feed-quadrado-erro': { w: 1080, h: 1080, body: `
-<div class="abs" style="left:56px;top:44px;right:56px;display:flex;justify-content:space-between;align-items:center">${logo(74)}<span class="pill" style="font-size:20px;padding:10px 22px">Para restaurantes</span></div>
+<div class="abs" style="left:56px;top:44px;right:56px;display:flex;justify-content:space-between;align-items:center">${logo(74)}</div>
 <h1 class="t abs" style="left:56px;top:160px;font-size:84px;line-height:1;white-space:nowrap">Chega de pedido</h1>
 ${hl('anotado errado.', 84, 'left:44px;top:256px')}
 <img class="abs shadow" src="${img('ticket2')}" style="left:70px;top:400px;width:320px;transform:rotate(-5deg);clip-path:inset(0 0 14% 0);-webkit-mask-image:linear-gradient(to bottom,#000 62%,transparent 86%)">
