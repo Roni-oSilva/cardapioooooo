@@ -279,6 +279,7 @@ function renderStaff(){renderTabs();const f={inicio:vInicio,cozinha:vKitchen,ped
 const mins=o=>Math.max(0,Math.floor((Date.now()-o.created)/60000));
 const ago=o=>{const m=mins(o);return m<1?'agora':m+' min'};
 const where=o=>o.table?'Mesa '+o.table:o.service==='retirada'?'Retirada':'Entrega';
+const jobFailed=o=>{const j=[...S.jobs].reverse().find(j=>j.n===o.n&&j.via==='cozinha'&&!j.reprint);return !!j&&j.status==='failed'};
 const printChip=o=>{const j=[...S.jobs].reverse().find(j=>j.n===o.n&&j.via==='cozinha'&&!j.reprint);if(!j)return'';const m={printed:['ok','🖨 Impressa'],queued:['wait','🖨 Na fila'],printing:['go','🖨 Imprimindo…'],failed:['bad','⚠ Falha na impressão']}[j.status];return`<span class="badge ${m[0]}">${m[1]}</span>`};
 
 function vInicio(){return`<div class="panel"><h2>Sistema completo de cardápio digital</h2>
@@ -289,7 +290,7 @@ function vInicio(){return`<div class="panel"><h2>Sistema completo de cardápio d
 
 function kcard(o,act,label){
  const m=mins(o),late=m>=(Math.max(...o.items.map(i=>i.prep||0))+10);
- return`<article class="kcard ${o.fresh?'new':''}" data-id="${o.n}" ${late&&o.status!=='pronto'?'style="outline:4px solid var(--ember)"':''}><div class="row"><div><div class="mesa">${where(o)}</div><div style="font-size:12px;font-weight:600;margin-top:3px">Pedido #${o.n}${o.customer?' · '+esc(o.customer):''}</div></div><div style="text-align:right"><span class="badge ${late?'bad':m>=10?'go':'s-entregue'}" style="font-size:14px">⏱ ${ago(o)}</span>${o.fresh?'<div style="color:var(--ember);font-weight:800;font-size:11px;margin-top:4px">NOVO!</div>':''}${printChip(o).includes('bad')?'<div style="color:var(--ember);font-size:10.5px;font-weight:700;margin-top:4px">⚠ comanda não impressa</div>':''}</div></div>
+ return`<article class="kcard ${o.fresh?'new':''}" data-id="${o.n}" ${late&&o.status!=='pronto'?'style="outline:4px solid var(--ember)"':''}><div class="row"><div><div class="mesa">${where(o)}</div><div style="font-size:12px;font-weight:600;margin-top:3px">Pedido #${o.n}${o.customer?' · '+esc(o.customer):''}</div></div><div style="text-align:right"><span class="badge ${late?'bad':m>=10?'go':'s-entregue'}" style="font-size:14px">⏱ ${ago(o)}</span>${o.fresh?'<div style="color:var(--ember);font-weight:800;font-size:11px;margin-top:4px">NOVO!</div>':''}${jobFailed(o)?'<div style="color:var(--ember);font-size:10.5px;font-weight:700;margin-top:4px">⚠ comanda não impressa</div>':''}</div></div>
  <div style="border-top:2px dashed rgba(108,23,11,.3);margin-top:10px;padding-top:2px">${o.items.map(i=>`<div class="kit"><b>${i.q}×</b>${esc(i.name)}</div>${i.opts.map(x=>`<div class="ko"><i>${esc(x.g)}:</i> ${esc(x.n)}</div>`).join('')}${i.notes?`<div class="kn">⚠ ${esc(i.notes)}</div>`:''}`).join('')}</div>
  ${o.notes?`<div class="kn" style="margin-top:8px">OBS: ${esc(o.notes)}</div>`:''}
  <button class="pill btn" style="width:100%;justify-content:center;margin-top:12px;min-height:48px;font-size:15px" data-act="status" data-n="${o.n}" data-to="${act}">${label}</button></article>`}
