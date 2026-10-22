@@ -21,17 +21,16 @@ const feed = `
 <div class="abs" style="left:0;right:0;top:1240px;text-align:center"><span class="cta t" style="font-size:42px;line-height:1">Peça uma demonstração <span style="font-size:44px">→</span></span></div>
 `;
 const story = `
-<div class="abs" style="left:70px;top:110px"><span class="pill" style="font-size:28px">Para restaurantes</span></div>
-<h1 class="t abs" style="left:66px;top:196px;font-size:214px">Cardápio<br>digital</h1>
-<p class="abs" style="left:70px;top:610px;width:900px;font-size:44px;font-weight:600;line-height:1.25">Seu cliente pede pelo celular.<br>A cozinha recebe e imprime<br>a comanda sozinha.</p>
-<img class="abs shadow" src="${img('phone')}" style="right:50px;top:800px;width:470px;transform:rotate(4deg)">
-<img class="abs shadow" src="${img('kitchen')}" style="left:44px;top:900px;width:430px;transform:rotate(-4deg);border-radius:22px">
-<img class="abs shadow" src="${img('ticket')}" style="left:90px;top:1380px;width:300px;transform:rotate(3deg);clip-path:inset(0 0 52% 0)">
-<div class="badge" style="left:410px;top:830px;transform:rotate(-8deg)"><div><b>Comanda<br>automática</b><small>na impressora</small></div></div>
-<div class="panel abs" style="left:56px;right:56px;top:1530px;padding:36px 44px;height:200px">
+<div class="abs" style="left:70px;top:236px"><span class="pill" style="font-size:28px">Para restaurantes</span></div>
+<h1 class="t abs" style="left:66px;top:318px;font-size:172px">Cardápio<br>digital</h1>
+<p class="abs" style="left:70px;top:660px;width:900px;font-size:42px;font-weight:600;line-height:1.25">Seu cliente pede pelo celular.<br>A cozinha recebe e <span style="background:#f8ebd0;color:#6c170b;padding:0 12px;border-radius:10px;font-weight:700">imprime a comanda</span><br>sozinha.</p>
+<img class="abs shadow" src="${img('phone')}" style="right:50px;top:880px;width:390px;transform:rotate(4deg);clip-path:inset(0 0 24% 0)">
+<img class="abs shadow" src="${img('kitchen')}" style="left:44px;top:960px;width:430px;transform:rotate(-4deg);border-radius:24px">
+<div class="badge" style="left:372px;top:1175px;transform:rotate(-8deg)"><div><b>Comanda<br>automática</b><small>na impressora</small></div></div>
+<div class="panel abs" style="left:56px;right:56px;top:1380px;padding:34px 44px;height:196px">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 24px"><div class="feat" style="font-size:28px"><i>✓</i>QR code na mesa</div><div class="feat" style="font-size:28px"><i>✓</i>Monitor de cozinha</div><div class="feat" style="font-size:28px"><i>✓</i>Divisão de conta</div><div class="feat" style="font-size:28px"><i>✓</i>Financeiro real</div></div>
 </div>
-<div class="abs" style="left:0;right:0;top:1760px;text-align:center"><span class="cta t" style="font-size:46px;line-height:1">Peça uma demonstração →</span></div>
+<div class="abs" style="left:0;right:0;top:1550px;text-align:center"><span class="cta t" style="font-size:44px;line-height:1">Peça uma demonstração →</span></div>
 `;
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/' + fs.readdirSync('/opt/pw-browsers').find((d) => d.startsWith('chromium-')) + '/chrome-linux/chrome', args: ['--no-sandbox', '--allow-file-access-from-files'] });
 for (const [mode, body, h] of [['feed', feed, 1350], ['story', story, 1920]]) {
